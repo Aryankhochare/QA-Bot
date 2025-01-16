@@ -16,7 +16,7 @@ def chunk_text(text, chunk_size=500, chunk_overlap=50):
 
 # Test function
 if __name__ == "__main__":
-    pdf_path = "C:/Users/DELL/Desktop/Doc Reader/data/sample.pdf"  # Replace with the path to your PDF
+    pdf_path = "C:/Users/DELL/Desktop/QA-BOT/data/sample.pdf"  # Replace with the path to your PDF
     text = extract_text_from_pdf(pdf_path)
     chunks = chunk_text(text)
     print(f"Generated {len(chunks)} chunks.")

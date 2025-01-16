@@ -1,6 +1,5 @@
 langchain
-qdrant-client
+google-generativeai
+python-dotenv
 PyPDF2
-pdfplumber
-openai
-streamlit
+qdrant-client
