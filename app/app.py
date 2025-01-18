@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from qa_bot import *
 from cookie_manager import init_cookie_manager, show_cookie_banner, handle_cookie_consent, load_analytics
-
+from security_headers import get_security_headers
 
 st.set_page_config(
     page_title="AIDocQ",
@@ -255,3 +255,8 @@ if prompt := st.chat_input("Type your question here..."):
         st.session_state.chat_history[st.session_state.current_session].append(
             {"role": "assistant", "content": response}
         )
+        # Apply security headers
+for header, value in get_security_headers().items():
+    st.markdown(f"""
+        <meta http-equiv="{header}" content="{value}">
+    """, unsafe_allow_html=True)
