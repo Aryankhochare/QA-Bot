@@ -3,14 +3,14 @@ import uuid
 from datetime import datetime
 from qa_bot import *
 
-# Set page config and remove default menu items
+
 st.set_page_config(
-    page_title="ChatBot",
+    page_title="AIDocQ",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS for better styling
+# Custom CSS 
 st.markdown("""
     <style>
     /* Sidebar styling */
@@ -46,7 +46,7 @@ st.markdown("""
     }
     
     /* Hide Streamlit branding */
-    #MainMenu {visibility: hidden;}
+    MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     
     /* Better button styling */
@@ -70,6 +70,27 @@ st.markdown("""
         padding: 15px;
         border-radius: 10px;
         margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .chat-timestamp {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .app-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #1E88E5;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -81,12 +102,17 @@ if 'current_session' not in st.session_state:
     st.session_state.current_session = None
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = {}
+if 'chat_counter' not in st.session_state:
+    st.session_state.chat_counter = 1
 
 def create_new_session():
     session_id = str(uuid.uuid4())
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+    chat_name = f"Chat {st.session_state.chat_counter}"
+    st.session_state.chat_counter += 1
     st.session_state.sessions[session_id] = {
-        'name': f"Chat {timestamp}",
+        'name': chat_name,
+        'timestamp': timestamp,
         'files': [],
         'vector_store': None,
         'qa_chain': None
@@ -98,7 +124,7 @@ with st.sidebar:
     st.title("💬 Chat Sessions")
     st.divider()
     
-    # New chat button with better styling
+    # New chat button 
     if st.button("➕ New Chat", type="primary", use_container_width=True):
         session_id = create_new_session()
         st.session_state.current_session = session_id
@@ -106,7 +132,7 @@ with st.sidebar:
     
     st.divider()
     
-    # Session list with better organization
+    # Session list 
     for session_id, session in st.session_state.sessions.items():
         col1, col2 = st.columns([5,1])
         with col1:
@@ -134,8 +160,15 @@ if st.session_state.current_session is None:
 
 current_session = st.session_state.sessions[st.session_state.current_session]
 
-# Main header
-st.markdown(f"<div class='main-header'><h2>💬 {current_session['name']}</h2></div>", unsafe_allow_html=True)
+# Main header 
+st.markdown("<h1 class='app-title'>AIDocQ</h1>", unsafe_allow_html=True)
+st.markdown(
+    f"""<div class='main-header'>
+        <div class='chat-title'>{current_session['name']}</div>
+        <div class='chat-timestamp'>{current_session['timestamp']}</div>
+    </div>""", 
+    unsafe_allow_html=True
+)
 
 # File upload section
 with st.expander("📁 Upload Documents", expanded=not current_session.get('files')):
@@ -221,16 +254,3 @@ if prompt := st.chat_input("Type your question here..."):
         st.session_state.chat_history[st.session_state.current_session].append(
             {"role": "assistant", "content": response}
         )
-
-# Rename session option
-with st.sidebar:
-    st.divider()
-    if st.button("✏️ Rename Current Session", use_container_width=True):
-        new_name = st.text_input(
-            "Enter new name:",
-            value=current_session['name'],
-            key="rename_input"
-        )
-        if st.button("Save", type="primary"):
-            current_session['name'] = new_name
-            st.rerun()
