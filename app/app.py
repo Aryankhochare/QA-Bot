@@ -2,6 +2,7 @@ import streamlit as st
 import uuid
 from datetime import datetime
 from qa_bot import *
+from cookie_manager import init_cookie_manager, show_cookie_banner, handle_cookie_consent, load_analytics
 
 
 st.set_page_config(
